@@ -2,7 +2,7 @@ import connectDB from '../../../../lib/mongodb.js';
 import User from '../../../../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import cookie from 'cookie'; // knihovna pro práci s cookies
+import { serialize } from 'cookie'; // knihovna pro práci s cookies
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -38,7 +38,7 @@ export async function POST(req) {
   );
 
   // ✅ Nastavit cookie s tokenem
-  const serialized = cookie.serialize('authToken', token, {
+  const serialized = serialize('authToken', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',

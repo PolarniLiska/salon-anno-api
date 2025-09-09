@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  reactStrictMode: true,
+  // API pro Vercel - ŽÁDNÝ static export!
 }
 
 module.exports = nextConfig

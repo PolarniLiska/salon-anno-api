@@ -1,8 +1,8 @@
-import cookie from 'cookie';
+import { serialize } from 'cookie';
 
 export async function POST(req) {
   // Set cookie to expire in the past, effectively deleting it
-  const serialized = cookie.serialize('authToken', '', {
+  const serialized = serialize('authToken', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',

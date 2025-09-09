@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import cookie from 'cookie';
+import { parse as parseCookie } from 'cookie';
 import connectDB from '../../../../lib/mongodb.js';
 import User from '../../../../models/User.js';
 
@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
 export async function GET(req) {
   await connectDB();
-  const cookies = cookie.parse(req.headers.get('cookie') || '');
+  const cookies = parseCookie(req.headers.get('cookie') || '');
   const token = cookies.authToken;
 
   if (!token) {
