@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { parse as parseCookie } from 'cookie';
-import connectDB from '../../../../lib/mongodb.js';
-import User from '../../../../models/User.js';
+import connectDB from '../../../lib/mongodb.js';
+import User from '../../../models/User.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 

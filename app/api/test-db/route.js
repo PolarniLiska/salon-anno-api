@@ -1,4 +1,4 @@
-import connectDB from '../../../../lib/mongodb.js';
+import connectDB from '../../../lib/mongodb.js';
 
 export async function GET() {
   await connectDB();

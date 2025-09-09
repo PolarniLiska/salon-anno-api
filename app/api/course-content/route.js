@@ -1,5 +1,5 @@
-import connectDB from '../../../../lib/mongodb.js';
-import { withActivatedUser } from '../../../../lib/middleware.js';
+import connectDB from '../../../lib/mongodb.js';
+import { withActivatedUser } from '../../../lib/middleware.js';
 
 // Simulovaný obsah kurzu
 const courseContent = [

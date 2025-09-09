@@ -1,8 +1,8 @@
-import connectDB from '../../../../../lib/mongodb.js';
-import Code from '../../../../../models/Code.js';
-import User from '../../../../../models/User.js';
+import connectDB from '../../../../lib/mongodb.js';
+import Code from '../../../../models/Code.js';
+import User from '../../../../models/User.js';
 import { ensureEnoughCodes } from '../../codes/seed/route.js';
-import { withAuth } from '../../../../../lib/middleware.js';
+import { withAuth } from '../../../../lib/middleware.js';
 
 async function handlePOST(req) {
   await connectDB();

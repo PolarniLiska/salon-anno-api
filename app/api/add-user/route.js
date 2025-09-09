@@ -1,7 +1,7 @@
-import connectDB from '../../../../lib/mongodb.js';
-import User from '../../../../models/User.js';
+import connectDB from '../../../lib/mongodb.js';
+import User from '../../../models/User.js';
 import bcrypt from 'bcryptjs';
-import { withAuth } from '../../../../lib/middleware.js';
+import { withAuth } from '../../../lib/middleware.js';
 
 async function handlePOST(req) {
   await connectDB();

@@ -1,5 +1,5 @@
-import connectDB from '../../../../lib/mongodb.js';
-import User from '../../../../models/User.js';
+import connectDB from '../../../lib/mongodb.js';
+import User from '../../../models/User.js';
 import crypto from 'crypto';
 
 export async function POST(req) {

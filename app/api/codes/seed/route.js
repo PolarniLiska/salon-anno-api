@@ -1,5 +1,5 @@
-import connectDB from '../../../../../lib/mongodb.js';
-import Code from '../../../../../models/Code.js';
+import connectDB from '../../../../lib/mongodb.js';
+import Code from '../../../../models/Code.js';
 
 // Helper to generate a random code
 function generateRandomCode(length = 8) {
