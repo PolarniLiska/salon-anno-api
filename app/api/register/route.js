@@ -1,7 +1,7 @@
-import connectDB from '../../../../lib/mongodb.js';
-import User from '../../../../models/User.js';
+import connectDB from '../../../lib/mongodb.js';
+import User from '../../../models/User.js';
 import bcrypt from 'bcryptjs';
-import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
+import { handleCors, setCorsHeaders } from '../../../lib/cors.js';
 
 // Handle CORS preflight
 export async function OPTIONS(req) {

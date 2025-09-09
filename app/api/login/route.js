@@ -1,9 +1,9 @@
-import connectDB from '../../../../lib/mongodb.js';
-import User from '../../../../models/User.js';
+import connectDB from '../../../lib/mongodb.js';
+import User from '../../../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie'; // knihovna pro práci s cookies
-import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
+import { handleCors, setCorsHeaders } from '../../../lib/cors.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
