@@ -1,6 +1,9 @@
 import connectDB from '../../../lib/mongodb.js';
 import { withActivatedUser } from '../../../lib/middleware.js';
 
+// Force dynamic rendering for API route
+export const dynamic = 'force-dynamic';
+
 // Simulovaný obsah kurzu
 const courseContent = [
   {

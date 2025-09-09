@@ -7,6 +7,9 @@ import { handleCors, setCorsHeaders } from '../../../lib/cors.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// Force dynamic rendering for API route
+export const dynamic = 'force-dynamic';
+
 // Handle CORS preflight
 export async function OPTIONS(req) {
   return handleCors(req);

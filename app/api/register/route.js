@@ -3,6 +3,9 @@ import User from '../../../models/User.js';
 import bcrypt from 'bcryptjs';
 import { handleCors, setCorsHeaders } from '../../../lib/cors.js';
 
+// Force dynamic rendering for API route
+export const dynamic = 'force-dynamic';
+
 // Handle CORS preflight
 export async function OPTIONS(req) {
   return handleCors(req);
