@@ -3,31 +3,40 @@ import User from '../../../../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie'; // knihovna pro práci s cookies
+import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// Handle CORS preflight
+export async function OPTIONS(req) {
+  return handleCors(req);
+}
+
 export async function POST(req) {
+  // Handle CORS preflight
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
   await connectDB();
 
   const { email, password } = await req.json();
 
   // Validace vstupů
   if (!email || !password) {
-    return new Response(JSON.stringify({ error: 'Email a heslo jsou povinné' }), { status: 400 });
+    return setCorsHeaders(new Response(JSON.stringify({ error: 'Email a heslo jsou povinné' }), { status: 400 }));
   }
 
   if (!email.includes('@')) {
-    return new Response(JSON.stringify({ error: 'Neplatný email formát' }), { status: 400 });
+    return setCorsHeaders(new Response(JSON.stringify({ error: 'Neplatný email formát' }), { status: 400 }));
   }
 
   const user = await User.findOne({ email });
   if (!user) {
-    return new Response(JSON.stringify({ error: 'Uživatel nenalezen' }), { status: 404 });
+    return setCorsHeaders(new Response(JSON.stringify({ error: 'Uživatel nenalezen' }), { status: 404 }));
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
   if (!isPasswordValid) {
-    return new Response(JSON.stringify({ error: 'Špatné heslo' }), { status: 401 });
+    return setCorsHeaders(new Response(JSON.stringify({ error: 'Špatné heslo' }), { status: 401 }));
   }
 
   // ✅ Vygenerovat JWT token
@@ -54,11 +63,11 @@ export async function POST(req) {
       activated: user.activated,
   };
 
-  return new Response(JSON.stringify({ message: '✅ Přihlášení úspěšné', user: userResponse }), {
+  return setCorsHeaders(new Response(JSON.stringify({ message: '✅ Přihlášení úspěšné', user: userResponse }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',
       'Set-Cookie': serialized, // cookie se nastaví v odpovědi
     },
-  });
+  }));
 }

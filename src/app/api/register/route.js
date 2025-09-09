@@ -1,8 +1,17 @@
 import connectDB from '../../../../lib/mongodb.js';
 import User from '../../../../models/User.js';
 import bcrypt from 'bcryptjs';
+import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
+
+// Handle CORS preflight
+export async function OPTIONS(req) {
+  return handleCors(req);
+}
 
 export async function POST(req) {
+  // Handle CORS preflight
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
   await connectDB();
 
   const { name, email, password } = await req.json();
