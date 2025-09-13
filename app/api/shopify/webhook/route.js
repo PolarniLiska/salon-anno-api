@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '../../../../lib/mongodb.js';
+import connectDB from '../../../../lib/mongodb.js';
 import Code from '../../../../models/Code.js';
 import User from '../../../../models/User.js';
 import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
@@ -54,7 +54,7 @@ export async function POST(req) {
         }
         
         // Připojení k databázi
-        await connectToDatabase();
+        await connectDB();
         
         // Najít nejstarší nepoužitý kód
         const availableCode = await Code.findOne({ 
