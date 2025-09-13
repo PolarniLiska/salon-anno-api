@@ -43,15 +43,20 @@ export async function POST(req) {
         console.log('Shopify webhook obdržen:', order.id);
         
         // Kontrola, zda objednávka obsahuje "Online kurz přístup"
-        const hasOnlineCourse = order.line_items.some(item => 
-            item.name.toLowerCase().includes('online kurz') && 
-            item.name.toLowerCase().includes('přístup')
-        );
+        const hasOnlineCourse = order.line_items.some(item => {
+            const name = item.name.toLowerCase();
+            return (name.includes('online kurz') && name.includes('přístup')) ||
+                   name.includes('online kurz přístup') ||
+                   name.includes('kurz přístup');
+        });
         
         if (!hasOnlineCourse) {
-            console.log('Objednávka neobsahuje online kurz, ignoruji');
+            console.log(`Objednávka ${order.id} neobsahuje online kurz, ignoruji. Produkty:`, 
+                order.line_items.map(item => item.name));
             return setCorsHeaders(new NextResponse('OK', { status: 200 }));
         }
+        
+        console.log(`Objednávka ${order.id} obsahuje online kurz, zpracovávám...`);
         
         // Připojení k databázi
         await connectDB();
