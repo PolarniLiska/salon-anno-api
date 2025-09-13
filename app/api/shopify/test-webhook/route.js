@@ -29,22 +29,31 @@ export async function POST(req) {
         // Připojení k databázi
         await connectDB();
         
-        // Najít nejstarší nepoužitý kód
+        // Najít nejstarší nepoužitý kód (kontrolujeme oba způsoby označení)
         const availableCode = await Code.findOne({ 
-            isUsed: false 
+            $and: [
+                { $or: [{ used: false }, { used: { $exists: false } }] },
+                { $or: [{ isUsed: false }, { isUsed: { $exists: false } }] }
+            ]
         }).sort({ createdAt: 1 });
         
         if (!availableCode) {
             return setCorsHeaders(new NextResponse(JSON.stringify({ 
                 error: 'Žádný dostupný kód nenalezen!',
-                availableCodes: await Code.countDocuments({ isUsed: false })
+                availableCodes: await Code.countDocuments({ 
+                    $and: [
+                        { $or: [{ used: false }, { used: { $exists: false } }] },
+                        { $or: [{ isUsed: false }, { isUsed: { $exists: false } }] }
+                    ]
+                })
             }), { 
                 status: 404,
                 headers: { 'Content-Type': 'application/json' }
             }));
         }
         
-        // Označit kód jako použitý a přiřadit k testovací objednávce
+        // Označit kód jako použitý a přiřadit k testovací objednávce (oba způsoby pro konzistenci)
+        availableCode.used = true;
         availableCode.isUsed = true;
         availableCode.shopifyOrderId = testOrder.id;
         availableCode.customerEmail = testOrder.email;
@@ -59,7 +68,12 @@ export async function POST(req) {
             assignedCode: availableCode.code,
             testOrderId: testOrder.id,
             customerEmail: testOrder.email,
-            remainingCodes: await Code.countDocuments({ isUsed: false })
+            remainingCodes: await Code.countDocuments({ 
+                $and: [
+                    { $or: [{ used: false }, { used: { $exists: false } }] },
+                    { $or: [{ isUsed: false }, { isUsed: { $exists: false } }] }
+                ]
+            })
         }), { 
             status: 200,
             headers: { 'Content-Type': 'application/json' }
