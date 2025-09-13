@@ -3,7 +3,7 @@ import connectDB from '../../../../lib/mongodb.js';
 import Code from '../../../../models/Code.js';
 import User from '../../../../models/User.js';
 import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
-import { ensureEnoughCodes } from '../codes/seed/route.js';
+import { ensureEnoughCodes } from '../../codes/seed/route.js';
 
 export const dynamic = 'force-dynamic';
 
