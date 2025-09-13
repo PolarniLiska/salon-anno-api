@@ -3,6 +3,7 @@ import connectDB from '../../../../lib/mongodb.js';
 import Code from '../../../../models/Code.js';
 import User from '../../../../models/User.js';
 import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
+import { ensureEnoughCodes } from '../codes/seed/route.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,6 +98,15 @@ export async function POST(req) {
         foundCode.usedAt = new Date();
         await foundCode.save();
         console.log('Kód označen jako použitý');
+        
+        // Automaticky vygenerovat nový kód pro udržení zásoby
+        try {
+            await ensureEnoughCodes();
+            console.log('Zásoba kódů doplněna');
+        } catch (error) {
+            console.error('Chyba při doplňování zásoby kódů:', error);
+            // Nechceme zablokovat aktivaci kvůli chybě v generování
+        }
         
         return setCorsHeaders(new NextResponse(JSON.stringify({ 
             message: '✅ Course activated successfully.' 
