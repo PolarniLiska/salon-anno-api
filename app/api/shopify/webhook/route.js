@@ -4,11 +4,15 @@ import Code from '../../../../models/Code.js';
 import User from '../../../../models/User.js';
 import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
 import crypto from 'crypto';
+import { Resend } from 'resend';
 
 export const dynamic = 'force-dynamic';
 
 // Shopify webhook secret - nastavte v .env.local
 const SHOPIFY_WEBHOOK_SECRET = process.env.SHOPIFY_WEBHOOK_SECRET;
+
+// Resend email service
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 function verifyShopifyWebhook(data, signature) {
     if (!SHOPIFY_WEBHOOK_SECRET) {
@@ -107,12 +111,9 @@ export async function POST(req) {
 // Funkce pro odeslání emailu s kódem
 async function sendCodeEmail(email, code, order) {
     try {
-        // Zde můžeme implementovat odeslání emailu
-        // Například pomocí Nodemailer, SendGrid, nebo jiné služby
-        console.log(`Email by měl být odeslán na ${email} s kódem: ${code}`);
-        
-        // Pro testování můžeme použít console.log
-        console.log(`
+        if (!process.env.RESEND_API_KEY) {
+            console.warn('RESEND_API_KEY není nastaveno - email nebude odeslán');
+            console.log(`
 === EMAIL PRO ZÁKAZNÍKA ===
 To: ${email}
 Subject: Váš přístupový kód k online kurzu
@@ -130,7 +131,44 @@ Objednávka č.: ${order.id}
 S pozdravem,
 Salón Anno
 =============================
-        `);
+            `);
+            return;
+        }
+
+        const { data, error } = await resend.emails.send({
+            from: 'Salón Anno <noreply@salon-anno.cz>',
+            to: [email],
+            subject: 'Váš přístupový kód k online kurzu',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333;">Dobrý den,</h2>
+                    
+                    <p>děkujeme za nákup online kurzu v <strong>Salónu Anno</strong>!</p>
+                    
+                    <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <h3 style="color: #333; margin-top: 0;">Váš přístupový kód:</h3>
+                        <div style="font-size: 24px; font-weight: bold; color: #007bff; letter-spacing: 2px;">${code}</div>
+                    </div>
+                    
+                    <p>Tento kód zadejte při registraci nebo přihlášení na našem webu pro aktivaci přístupu k videím.</p>
+                    
+                    <p><strong>Objednávka č.:</strong> ${order.id}</p>
+                    
+                    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                    
+                    <p style="color: #666; font-size: 14px;">
+                        S pozdravem,<br>
+                        <strong>Salón Anno</strong>
+                    </p>
+                </div>
+            `,
+        });
+
+        if (error) {
+            console.error('Chyba při odesílání emailu:', error);
+        } else {
+            console.log('Email úspěšně odeslán:', data);
+        }
         
     } catch (error) {
         console.error('Chyba při odesílání emailu:', error);
