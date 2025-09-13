@@ -56,11 +56,12 @@ export async function POST(req) {
         // Připojení k databázi
         await connectDB();
         
-        // Najít nejstarší nepoužitý kód (kontrolujeme oba způsoby označení)
+        // Najít nejstarší nepoužitý a nepřiřazený kód
         const availableCode = await Code.findOne({ 
             $and: [
                 { $or: [{ used: false }, { used: { $exists: false } }] },
-                { $or: [{ isUsed: false }, { isUsed: { $exists: false } }] }
+                { $or: [{ isUsed: false }, { isUsed: { $exists: false } }] },
+                { $or: [{ shopifyOrderId: null }, { shopifyOrderId: { $exists: false } }] } // Nepřiřazený
             ]
         }).sort({ createdAt: 1 }); // Nejstarší první
         
@@ -70,12 +71,11 @@ export async function POST(req) {
             return setCorsHeaders(new NextResponse('No codes available', { status: 500 }));
         }
         
-        // Označit kód jako použitý a přiřadit k objednávce (oba způsoby pro konzistenci)
-        availableCode.used = true;
-        availableCode.isUsed = true;
+        // Označit kód jako PŘIŘAZENÝ (ne použitý!) k objednávce
         availableCode.shopifyOrderId = order.id;
         availableCode.customerEmail = order.email;
         availableCode.assignedAt = new Date();
+        // NEOZNAČUJEME jako used/isUsed - to se stane až při aktivaci!
         await availableCode.save();
         
         console.log(`Kód ${availableCode.code} přiřazen k objednávce ${order.id}`);

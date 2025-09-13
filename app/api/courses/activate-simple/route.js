@@ -35,7 +35,7 @@ export async function POST(req) {
             }));
         }
         
-        // Najít kód (kontrolujeme oba způsoby označení)
+        // Najít kód - může být přiřazený ale ne ještě použitý
         console.log('Hledám kód:', code);
         const foundCode = await Code.findOne({ 
             code: code, 
@@ -44,6 +44,15 @@ export async function POST(req) {
                 { $or: [{ isUsed: false }, { isUsed: { $exists: false } }] }
             ]
         });
+        
+        console.log('Nalezený kód:', foundCode ? {
+            code: foundCode.code,
+            used: foundCode.used,
+            isUsed: foundCode.isUsed,
+            shopifyOrderId: foundCode.shopifyOrderId,
+            assignedAt: foundCode.assignedAt,
+            usedBy: foundCode.usedBy
+        } : 'Nenalezen');
         
         if (!foundCode) {
             console.log('Kód nenalezen nebo již použit');
