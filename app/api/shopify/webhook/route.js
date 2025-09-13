@@ -41,12 +41,10 @@ export async function POST(req) {
         
         const order = JSON.parse(body);
         console.log('Shopify webhook obdržen:', order.id);
-        console.log('Webhook data:', JSON.stringify(order, null, 2));
         
         // Kontrola, zda objednávka obsahuje "Online kurz přístup"
         const hasOnlineCourse = order.line_items && order.line_items.some(item => {
             const name = item.name.toLowerCase();
-            console.log('Kontroluji produkt:', name);
             return (name.includes('online kurz') && name.includes('přístup')) ||
                    name.includes('online kurz přístup') ||
                    name.includes('kurz přístup');
