@@ -1,7 +1,7 @@
 import connectDB from '../../../../lib/mongodb.js';
 import Code from '../../../../models/Code.js';
 import User from '../../../../models/User.js';
-import { ensureEnoughCodes } from '../../codes/seed/route.js';
+// import { ensureEnoughCodes } from '../../codes/seed/route.js'; // Dočasně odstraněno kvůli chybě
 import { withAuth } from '../../../../lib/middleware.js';
 import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
 
@@ -65,13 +65,13 @@ async function handlePOST(req) {
     await user.save();
     await foundCode.save();
 
-    // Trigger code seeding check
-    try {
-      await ensureEnoughCodes();
-    } catch (seedError) {
-      console.error("Failed to run post-activation code seeding:", seedError);
-      // Don't fail the whole request, just log the error.
-    }
+    // Trigger code seeding check - dočasně vypnuto
+    // try {
+    //   await ensureEnoughCodes();
+    // } catch (seedError) {
+    //   console.error("Failed to run post-activation code seeding:", seedError);
+    //   // Don't fail the whole request, just log the error.
+    // }
 
     return setCorsHeaders(new Response(JSON.stringify({ message: '✅ Course activated successfully.' }), { 
       status: 200,
