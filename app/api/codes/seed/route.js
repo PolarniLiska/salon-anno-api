@@ -1,5 +1,8 @@
 import connectDB from '../../../../lib/mongodb.js';
 import Code from '../../../../models/Code.js';
+import { handleCors, setCorsHeaders } from '../../../../lib/cors.js';
+
+export const dynamic = 'force-dynamic';
 
 // Helper to generate a random code
 function generateRandomCode(length = 8) {
@@ -12,12 +15,18 @@ function generateRandomCode(length = 8) {
 }
 
 // Function to ensure there are enough codes - moved to separate function
-async function ensureEnoughCodes() {
+export async function ensureEnoughCodes() {
   await connectDB();
   const targetCount = 10;
   
   try {
-    const unusedCodesCount = await Code.countDocuments({ used: false });
+    // Počítáme kódy, které nejsou použité (kontrolujeme oba způsoby označení)
+    const unusedCodesCount = await Code.countDocuments({ 
+      $and: [
+        { $or: [{ used: false }, { used: { $exists: false } }] },
+        { $or: [{ isUsed: false }, { isUsed: { $exists: false } }] }
+      ]
+    });
     
     if (unusedCodesCount < targetCount) {
       const codesToGenerate = targetCount - unusedCodesCount;
@@ -29,7 +38,11 @@ async function ensureEnoughCodes() {
         while (!isCodeCreated) {
           try {
             const code = generateRandomCode();
-            await Code.create({ code: code, used: false });
+            await Code.create({ 
+              code: code, 
+              used: false,
+              isUsed: false // Přidáváme oba způsoby pro konzistenci
+            });
             isCodeCreated = true;
           } catch (error) {
             if (error.code === 11000) { // Duplicate key error
@@ -52,17 +65,21 @@ async function ensureEnoughCodes() {
   }
 }
 
+export async function OPTIONS(req) {
+  return handleCors(req);
+}
+
 export async function POST(req) {
   try {
     const result = await ensureEnoughCodes();
-    return new Response(JSON.stringify(result), {
+    return setCorsHeaders(new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    });
+    }));
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    return setCorsHeaders(new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
-    });
+    }));
   }
 } 
