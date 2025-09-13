@@ -35,24 +35,28 @@ export async function POST(req) {
             }));
         }
         
-        // Najít kód - může být přiřazený ale ne ještě použitý
+        // Najít kód - jednodušší dotaz
         console.log('Hledám kód:', code);
-        const foundCode = await Code.findOne({ 
-            code: code, 
-            $and: [
-                { $or: [{ used: false }, { used: { $exists: false } }] },
-                { $or: [{ isUsed: false }, { isUsed: { $exists: false } }] }
-            ]
-        });
+        const foundCode = await Code.findOne({ code: code });
         
         console.log('Nalezený kód:', foundCode ? {
             code: foundCode.code,
             used: foundCode.used,
             isUsed: foundCode.isUsed,
             shopifyOrderId: foundCode.shopifyOrderId,
-            assignedAt: foundCode.assignedAt,
             usedBy: foundCode.usedBy
         } : 'Nenalezen');
+        
+        // Kontrola, zda kód není už použitý
+        if (foundCode && (foundCode.used === true || foundCode.isUsed === true)) {
+            console.log('Kód je již použitý');
+            return setCorsHeaders(new NextResponse(JSON.stringify({ 
+                error: 'Code already used.' 
+            }), { 
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            }));
+        }
         
         if (!foundCode) {
             console.log('Kód nenalezen nebo již použit');
@@ -66,7 +70,8 @@ export async function POST(req) {
         
         console.log('Kód nalezen:', foundCode.code);
         
-        // Najít uživatele
+        // Najít uživatele - jednodušší dotaz
+        console.log('Hledám uživatele:', email);
         const user = await User.findOne({ email: email });
         if (!user) {
             console.log('Uživatel nenalezen');
