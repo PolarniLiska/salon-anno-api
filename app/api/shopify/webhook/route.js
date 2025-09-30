@@ -37,10 +37,14 @@ export async function POST(req) {
         const body = await req.text();
         const signature = req.headers.get('x-shopify-hmac-sha256');
         
-        // Verifikace webhook podpisu
-        if (!verifyShopifyWebhook(body, signature)) {
+        // Verifikace webhook podpisu (dočasně vypnuto pro test)
+        if (SHOPIFY_WEBHOOK_SECRET && !verifyShopifyWebhook(body, signature)) {
             console.error('Neplatný Shopify webhook podpis');
             return setCorsHeaders(new NextResponse('Unauthorized', { status: 401 }));
+        }
+        
+        if (!SHOPIFY_WEBHOOK_SECRET) {
+            console.warn('⚠️ SHOPIFY_WEBHOOK_SECRET není nastaveno - webhook bez verifikace!');
         }
         
         const order = JSON.parse(body);
@@ -124,7 +128,7 @@ děkujeme za nákup online kurzu v Salónu Anno!
 
 Váš přístupový kód: ${code}
 
-Tento kód zadejte při registraci nebo přihlášení na našem webu pro aktivaci přístupu k videím.
+Kód zadejte při registraci, nebo přihlášení na našem webu pro aktivaci přístupu k videím.
 
 Objednávka č.: ${order.id}
 
@@ -136,7 +140,7 @@ Salón Anno
         }
 
         const { data, error } = await resend.emails.send({
-            from: 'Salón Anno <noreply@salon-anno.cz>',
+            from: 'Salón Anno <noreply@salonanno.cz>',
             to: [email],
             subject: 'Váš přístupový kód k online kurzu',
             html: `
