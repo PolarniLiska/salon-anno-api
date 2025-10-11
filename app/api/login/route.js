@@ -72,5 +72,5 @@ export async function POST(req) {
       'Content-Type': 'application/json',
       'Set-Cookie': serialized, // cookie se nastaví v odpovědi
     },
-  }));
+  }), req);
 }

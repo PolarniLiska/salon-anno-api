@@ -20,7 +20,7 @@ export async function GET(req) {
   const token = cookies.authToken;
 
   if (!token) {
-    return setCorsHeaders(new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 }));
+    return setCorsHeaders(new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 }), req);
   }
 
   try {
@@ -38,7 +38,7 @@ export async function GET(req) {
     return setCorsHeaders(new Response(JSON.stringify({ user }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    }));
+    }), req);
   } catch (err) {
     return setCorsHeaders(new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401 }));
   }
