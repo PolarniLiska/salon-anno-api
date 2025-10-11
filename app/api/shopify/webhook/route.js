@@ -50,21 +50,31 @@ export async function POST(req) {
         const order = JSON.parse(body);
         console.log('Shopify webhook obdržen:', order.id);
         
-        // Kontrola, zda objednávka obsahuje "Online kurz přístup"
+        // Kontrola, zda objednávka obsahuje online kurz nebo testovací produkty
         const hasOnlineCourse = order.line_items && order.line_items.some(item => {
             const name = item.name.toLowerCase();
             return (name.includes('online kurz') && name.includes('přístup')) ||
                    name.includes('online kurz přístup') ||
-                   name.includes('kurz přístup');
+                   name.includes('kurz přístup') ||
+                   // Testovací produkty z Shopify
+                   name.includes('čisticí mléko essential') ||
+                   name.includes('čisticí pěna essential') ||
+                   name.includes('balance tonikum essential');
         });
         
         if (!hasOnlineCourse) {
-            console.log(`Objednávka ${order.id} neobsahuje online kurz, ignoruji. Produkty:`, 
+            console.log(`Objednávka ${order.id} neobsahuje online kurz ani testovací produkty, ignoruji. Produkty:`, 
                 order.line_items ? order.line_items.map(item => item.name) : 'Žádné produkty');
             return setCorsHeaders(new NextResponse('OK', { status: 200 }));
         }
         
-        console.log(`Objednávka ${order.id} obsahuje online kurz, zpracovávám...`);
+        console.log(`Objednávka ${order.id} obsahuje online kurz nebo testovací produkty, zpracovávám...`);
+        
+        // Pro testovací objednávky z Shopify použij tvůj email
+        if (order.id.toString().startsWith('820982911946154500')) {
+            console.log(`🧪 TESTOVACÍ objednávka - měním email na tvůj`);
+            order.email = 'jan.spiska@gmail.com'; // Změň na svůj email
+        }
         
         // Připojení k databázi
         await connectDB();

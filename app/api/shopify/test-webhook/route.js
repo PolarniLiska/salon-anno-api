@@ -13,10 +13,22 @@ export async function POST(req) {
     try {
         console.log('Test webhook endpoint volán');
         
+        // Zkusit získat email z request body, jinak použít default
+        let testEmail = 'test@example.com';
+        try {
+            const body = await req.json();
+            if (body.email && body.email.includes('@')) {
+                testEmail = body.email;
+                console.log(`Používám zadaný email: ${testEmail}`);
+            }
+        } catch (e) {
+            // Pokud není JSON body, použij default email
+        }
+        
         // Simulace Shopify objednávky
         const testOrder = {
             id: 'TEST_' + Date.now(),
-            email: 'test@example.com',
+            email: testEmail,
             line_items: [
                 {
                     name: 'Online kurz přístup - Testovací objednávka',
