@@ -53,7 +53,7 @@ export async function POST(req) {
   const serialized = serialize('authToken', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'none', // Změněno z 'strict' na 'none' pro cross-origin
     maxAge: 60 * 60 * 24 * 7,
     path: '/',
   });
