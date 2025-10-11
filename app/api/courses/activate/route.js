@@ -17,7 +17,7 @@ async function handlePOST(req) {
       return setCorsHeaders(new Response(JSON.stringify({ error: 'Email and code are required.' }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
-      }));
+      }), req);
     }
 
     // Ověř, že uživatel aktivuje svůj vlastní účet
@@ -25,7 +25,7 @@ async function handlePOST(req) {
       return setCorsHeaders(new Response(JSON.stringify({ error: 'Můžete aktivovat pouze svůj vlastní účet.' }), { 
         status: 403,
         headers: { 'Content-Type': 'application/json' }
-      }));
+      }), req);
     }
 
     // Find the code (kontrolujeme oba způsoby označení použití)
@@ -40,7 +40,7 @@ async function handlePOST(req) {
       return setCorsHeaders(new Response(JSON.stringify({ error: 'Invalid or already used code.' }), { 
         status: 404,
         headers: { 'Content-Type': 'application/json' }
-      }));
+      }), req);
     }
 
     // Find the user
@@ -49,7 +49,7 @@ async function handlePOST(req) {
       return setCorsHeaders(new Response(JSON.stringify({ error: 'User not found.' }), { 
         status: 404,
         headers: { 'Content-Type': 'application/json' }
-      }));
+      }), req);
     }
     
     // Activate user
@@ -76,14 +76,14 @@ async function handlePOST(req) {
     return setCorsHeaders(new Response(JSON.stringify({ message: '✅ Course activated successfully.' }), { 
       status: 200,
       headers: { 'Content-Type': 'application/json' }
-    }));
+    }), req);
 
   } catch (error) {
     console.error('Activation Error:', error);
     return setCorsHeaders(new Response(JSON.stringify({ error: 'Server error during activation.' }), { 
       status: 500,
       headers: { 'Content-Type': 'application/json' }
-    }));
+    }), req);
   }
 }
 

@@ -33,7 +33,7 @@ export async function POST(req) {
             }), { 
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
-            }));
+            }), req);
         }
         
         // Najít kód - jednodušší dotaz
@@ -56,7 +56,7 @@ export async function POST(req) {
             }), { 
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
-            }));
+            }), req);
         }
         
         if (!foundCode) {
@@ -66,7 +66,7 @@ export async function POST(req) {
             }), { 
                 status: 404,
                 headers: { 'Content-Type': 'application/json' }
-            }));
+            }), req);
         }
         
         console.log('Kód nalezen:', foundCode.code);
@@ -81,7 +81,7 @@ export async function POST(req) {
             }), { 
                 status: 404,
                 headers: { 'Content-Type': 'application/json' }
-            }));
+            }), req);
         }
         
         console.log('Uživatel nalezen:', user.email);
@@ -113,7 +113,7 @@ export async function POST(req) {
         }), { 
             status: 200,
             headers: { 'Content-Type': 'application/json' }
-        }));
+        }), req);
         
     } catch (error) {
         console.error('Chyba při aktivaci kurzu:', error);
@@ -125,6 +125,6 @@ export async function POST(req) {
         }), { 
             status: 500,
             headers: { 'Content-Type': 'application/json' }
-        }));
+        }), req);
     }
 }

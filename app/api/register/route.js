@@ -25,21 +25,21 @@ export async function POST(req) {
       return setCorsHeaders(new Response(JSON.stringify({ error: 'Jméno, email a heslo jsou povinné' }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
-      }));
+      }), req);
     }
 
     if (!email.includes('@')) {
       return setCorsHeaders(new Response(JSON.stringify({ error: 'Neplatný email formát' }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
-      }));
+      }), req);
     }
 
     if (password.length < 6) {
       return setCorsHeaders(new Response(JSON.stringify({ error: 'Heslo musí mít alespoň 6 znaků' }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
-      }));
+      }), req);
     }
 
     console.log('Kontroluji existujícího uživatele');
@@ -49,7 +49,7 @@ export async function POST(req) {
       return setCorsHeaders(new Response(JSON.stringify({ error: 'Uživatel už existuje' }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }
-      }));
+      }), req);
     }
 
     console.log('Hashování hesla');
@@ -73,7 +73,7 @@ export async function POST(req) {
     }), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
-    }));
+    }), req);
     
   } catch (error) {
     console.error('Chyba při registraci:', error);
@@ -83,6 +83,6 @@ export async function POST(req) {
     }), { 
       status: 500,
       headers: { 'Content-Type': 'application/json' }
-    }));
+    }), req);
   }
 }
