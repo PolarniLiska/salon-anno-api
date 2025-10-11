@@ -14,5 +14,10 @@ const CodeSchema = new mongoose.Schema({
   timestamps: true // Automaticky přidá createdAt a updatedAt
 });
 
+// Explicitní indexy pro rychlé vyhledávání
+CodeSchema.index({ code: 1 }); // Index na code
+CodeSchema.index({ used: 1, isUsed: 1 }); // Compound index pro hledání nepoužitých kódů
+CodeSchema.index({ shopifyOrderId: 1 }); // Index na Shopify objednávky
+
 // Aby Next.js nevytvářel model víckrát při HMR:
 export default mongoose.models.Code || mongoose.model('Code', CodeSchema);
